@@ -102,8 +102,9 @@ public class SocioDAO {
     }
     
     
-    public void insertarInscripcion(Inscripcion i) throws MyException {
+    public boolean insertarInscripcion(Inscripcion i) throws MyException {
         conectar();
+        if (conexion != null) {
             try {
                 String insert = "insert into inscripcion values(?,?,?)";
                 PreparedStatement ps = conexion.prepareStatement(insert);
@@ -112,11 +113,16 @@ public class SocioDAO {
                 ps.setDate(3, new java.sql.Date(i.getFecha().getTime()));
                 ps.executeUpdate();
                 ps.close();
+                return true;
             } catch (SQLException ex) {
                 System.out.println("Error al insertar: " + ex.getMessage());
+                return false;
             } finally {
                 desconectar();
+            } 
     
+        } else {
+            return false;
         }
     }
     
@@ -128,7 +134,7 @@ public class SocioDAO {
         try {
             String url = "jdbc:mysql://localhost:3306/dam_gym";
             String user = "root";
-            String password = "jeveris";
+            String password = "tambacounda";
             conexion = DriverManager.getConnection(url, user, password);
 
         } catch (SQLException ex) {

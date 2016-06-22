@@ -1,9 +1,11 @@
 package vista;
 
-import java.util.ArrayList;
+import exception.MyException;
+
 import javax.swing.JOptionPane;
 import modelo.Actividad;
 import modelo.Inscripcion;
+import modelo.ListaActividades;
 import static uf1291damadiawara.Uf1291DamaDiawara.socioDAO;
 
 /**
@@ -12,15 +14,25 @@ import static uf1291damadiawara.Uf1291DamaDiawara.socioDAO;
  */
 public class AltaInscripcion extends javax.swing.JDialog {
 
-    private Inscripcion inscripcion;
+    private Inscripcion inscripcion;    
+    private Actividad actividadEscogida;
+    private ListaActividades actividades;
 
-    private ArrayList<Actividad> actividades;
+    public Actividad getActividadEscogida() {
+        return actividadEscogida;
+    }
 
-    public ArrayList<Actividad> getActividades() {
+    public void setActividadEscogida(Actividad actividadEscogida) {
+        this.actividadEscogida = actividadEscogida;
+    }
+
+    
+
+    public ListaActividades getActividades() {
         return actividades;
     }
 
-    public void setActividades(ArrayList<Actividad> actividades) {
+    public void setActividades(ListaActividades actividades) {
         this.actividades = actividades;
     }
 
@@ -37,9 +49,15 @@ public class AltaInscripcion extends javax.swing.JDialog {
      */
     public AltaInscripcion(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        inscripcion = new Inscripcion();
-//        actividades = socioDAO.selectAllActividades().getLista();
-        initComponents();
+        try {
+            inscripcion = new Inscripcion();
+            actividadEscogida = new Actividad();
+            actividades = socioDAO.selectAllActividades();
+            } catch (MyException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            }
+            initComponents();
+        
     }
 
     /**
@@ -76,6 +94,11 @@ public class AltaInscripcion extends javax.swing.JDialog {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "--Escoge una Actividad--" }));
 
         jButton1.setText("Aceptar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Cancelar");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -138,12 +161,29 @@ public class AltaInscripcion extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (comprobarCampos()) {
+            try {
+                if (socioDAO.insertarInscripcion(inscripcion)) {
+                    JOptionPane.showMessageDialog(this, "Socio dado de alta a " + actividadEscogida);
+                }
+            } catch (MyException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            } 
+            } else {
+                    JOptionPane.showMessageDialog(this, "Inscripción denegada.");
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private boolean comprobarCampos() {
 
         if (jTextField1.getText().isEmpty() || jComboBox1.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(this, "Rellene los campos vacíos, por favor");
             return false;
         }
+        //if () {
+            
+        //}
 
         return true;
 
